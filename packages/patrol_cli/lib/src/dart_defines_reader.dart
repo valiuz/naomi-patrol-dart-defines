@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 
@@ -12,9 +14,8 @@ class DartDefinesReader {
 
   Map<String, String> fromCli({required List<String> args}) => _parse(args);
 
-  Map<String, String> fromFile() {
-    final filePath = _fs.path.join(_projectRoot.path, '.patrol.env');
-    final file = _fs.file(filePath);
+  Map<String, String> fromPatrolEnvFile() {
+    final file = _getProjectFile('.patrol.env');
 
     if (!file.existsSync()) {
       return {};
@@ -23,6 +24,20 @@ class DartDefinesReader {
     final lines = file.readAsLinesSync()
       ..removeWhere((line) => line.trim().isEmpty);
     return _parse(lines);
+  }
+
+  Map<String, String> fromDartDefineFile(String path) {
+    final file = _getProjectFile(path);
+
+    if (!file.existsSync()) {
+      throw FileSystemException("$path doesn't exist");
+    }
+
+    final jsonFileString = file.readAsStringSync();
+    final variablesMap = (json.decode(jsonFileString) as Map<String, Object?>)
+        .map((key, value) => MapEntry(key, '$value'));
+
+    return variablesMap;
   }
 
   Map<String, String> _parse(List<String> args) {
@@ -44,5 +59,10 @@ class DartDefinesReader {
     }
 
     return map;
+  }
+
+  File _getProjectFile(String path) {
+    final filePath = _fs.path.join(_projectRoot.path, path);
+    return _fs.file(filePath);
   }
 }

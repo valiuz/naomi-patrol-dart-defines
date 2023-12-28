@@ -31,6 +31,7 @@ class BuildAndroidCommand extends PatrolCommand {
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
+    usesDartDefineFromFileOption();
     usesLabelOption();
     usesWaitOption();
 
@@ -89,10 +90,15 @@ class BuildAndroidCommand extends PatrolCommand {
 
     final displayLabel = boolArg('label');
 
+    final dartDefineFromFile = stringArg('dart-define-from-file');
+
     final customDartDefines = {
-      ..._dartDefinesReader.fromFile(),
+      ..._dartDefinesReader.fromPatrolEnvFile(),
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
+      if (dartDefineFromFile != null)
+        ..._dartDefinesReader.fromDartDefineFile(dartDefineFromFile),
     };
+
     final internalDartDefines = {
       'PATROL_WAIT': defaultWait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,

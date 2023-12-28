@@ -111,6 +111,9 @@ class AndroidAppOptions {
         if (i != flutter.dartDefines.length - 1) {
           dartDefinesString.write(',');
         }
+
+        // Add them also as Gradle properties to access them from build.gradle
+        cmd.add('-P${entry.key}=${entry.value}');
       }
 
       cmd.add('-Pdart-defines=$dartDefinesString');
@@ -206,6 +209,9 @@ class IOSAppOptions {
       ],
       ...['-destination-timeout', '1'],
       ...['-resultBundlePath', resultBundlePath],
+      for (final dartDefine in flutter.dartDefines.entries) ...[
+        '${dartDefine.key}=${dartDefine.value}',
+      ],
     ];
 
     return cmd;

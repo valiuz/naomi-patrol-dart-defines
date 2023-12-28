@@ -48,6 +48,7 @@ class DevelopCommand extends PatrolCommand {
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
+    usesDartDefineFromFileOption();
     usesLabelOption();
     usesWaitOption();
 
@@ -136,6 +137,8 @@ class DevelopCommand extends PatrolCommand {
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
 
+    final dartDefineFromFile = stringArg('dart-define-from-file');
+
     String? iOSInstalledAppsEnvVariable;
     if (device.targetPlatform == TargetPlatform.iOS) {
       iOSInstalledAppsEnvVariable =
@@ -143,9 +146,12 @@ class DevelopCommand extends PatrolCommand {
     }
 
     final customDartDefines = {
-      ..._dartDefinesReader.fromFile(),
+      ..._dartDefinesReader.fromPatrolEnvFile(),
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
+      if (dartDefineFromFile != null)
+        ..._dartDefinesReader.fromDartDefineFile(dartDefineFromFile),
     };
+
     final internalDartDefines = {
       'PATROL_WAIT': defaultWait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,

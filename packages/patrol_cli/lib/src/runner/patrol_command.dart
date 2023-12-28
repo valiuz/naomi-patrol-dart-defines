@@ -104,6 +104,15 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesDartDefineFromFileOption() {
+    argParser.addOption(
+      'dart-define-from-file',
+      help: 'A path to a json file containing key-value pairs that will '
+          'be available to the app under test.',
+      valueHelp: 'config/app_config.json',
+    );
+  }
+
   void usesAndroidOptions() {
     argParser.addOption(
       'package-name',

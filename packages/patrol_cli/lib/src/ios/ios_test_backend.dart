@@ -95,6 +95,7 @@ class IOSTestBackend {
       process = await _processManager.start(
         options.toFlutterBuildInvocation(options.flutter.buildMode),
         runInShell: true,
+        environment: Map.castFrom(options.flutter.dartDefines),
       );
       scope.addDispose(() async {
         process.kill();
@@ -171,6 +172,7 @@ class IOSTestBackend {
         runInShell: true,
         environment: {
           ..._platform.environment,
+          ...Map.castFrom(options.flutter.dartDefines),
           'TEST_RUNNER_PATROL_TEST_PORT': options.testServerPort.toString(),
           'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
         },

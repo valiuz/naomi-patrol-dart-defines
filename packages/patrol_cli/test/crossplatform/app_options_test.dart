@@ -76,6 +76,9 @@ void main() {
             r'.\gradlew.bat',
             ':app:assembleDevReleaseAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
+            '-PEMAIL=user@example.com',
+            '-PPASSWORD=ny4ncat',
+            '-Pfoo=bar',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
           ]),
         );
@@ -98,6 +101,9 @@ void main() {
             './gradlew',
             ':app:assembleDevDebugAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
+            '-PEMAIL=user@example.com',
+            '-PPASSWORD=ny4ncat',
+            '-Pfoo=bar',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
           ]),
         );

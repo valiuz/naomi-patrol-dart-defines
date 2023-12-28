@@ -58,6 +58,37 @@ void _test(Platform platform) {
       });
     });
 
+    group('fromDartDefineFile()', () {
+      const configFileName = 'config.json';
+      late File file;
+      setUp(() {
+        file = fs.file(configFileName);
+      });
+
+      test('reads correct simple input', () {
+        file.writeAsString(
+            '{"EMAIL": "email@example.com","PASSWORD": "ny4ncat"}');
+
+        expect(
+          reader.fromDartDefineFile(configFileName),
+          equals({'EMAIL': 'email@example.com', 'PASSWORD': 'ny4ncat'}),
+        );
+      });
+
+      test('throws when file not exists', () {
+        expect(
+          () => reader.fromDartDefineFile('not_exists.json'),
+          throwsA(
+            isA<FileSystemException>().having(
+              (err) => err.message,
+              'message',
+              "not_exists.json doesn't exist",
+            ),
+          ),
+        );
+      });
+    });
+
     group('fromFile()', () {
       late File file;
       setUp(() {
@@ -68,7 +99,7 @@ void _test(Platform platform) {
         file.writeAsString('EMAIL=email@example.com\nPASSWORD=ny4ncat\n');
 
         expect(
-          reader.fromFile(),
+          reader.fromPatrolEnvFile(),
           equals({'EMAIL': 'email@example.com', 'PASSWORD': 'ny4ncat'}),
         );
       });
@@ -77,7 +108,7 @@ void _test(Platform platform) {
         file.writeAsString('EMAIL=email@example.com\n\nPASSWORD=ny4ncat\n');
 
         expect(
-          reader.fromFile(),
+          reader.fromPatrolEnvFile(),
           equals({'EMAIL': 'email@example.com', 'PASSWORD': 'ny4ncat'}),
         );
       });
