@@ -60,7 +60,6 @@ class DevelopCommand extends PatrolCommand {
     argParser.addFlag(
       'open-devtools',
       help: 'Automatically open Patrol extension in DevTools when ready.',
-      defaultsTo: true,
     );
   }
 
@@ -203,7 +202,7 @@ class DevelopCommand extends PatrolCommand {
       configuration: buildMode.createConfiguration(iosFlavor),
       simulator: !device.real,
       appServerPort: super.appServerPort,
-      testServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
     );
 
     final macosOpts = MacOSAppOptions(
