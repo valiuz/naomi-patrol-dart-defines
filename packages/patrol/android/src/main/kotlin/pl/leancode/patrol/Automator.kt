@@ -187,6 +187,31 @@ class Automator private constructor() {
         delay()
     }
 
+    fun tapAt(x: Float, y: Float) {
+        Logger.d("tapAt(x: $x, y: $y)")
+
+        if (x !in 0f..1f) {
+            throw IllegalArgumentException("x represents a percentage and must be between 0 and 1")
+        }
+
+        if (y !in 0f..1f) {
+            throw IllegalArgumentException("y represents a percentage and must be between 0 and 1")
+        }
+
+        val displayX = (uiDevice.displayWidth * x).roundToInt()
+        val displayY = (uiDevice.displayHeight * y).roundToInt()
+
+        Logger.d("Clicking at display location (pixels) [$displayX, $displayY]")
+
+        val successful = uiDevice.click(displayX, displayY)
+
+        if (!successful) {
+            throw IllegalArgumentException("Clicking at location [$displayX, $displayY] failed")
+        }
+
+        delay()
+    }
+
     fun enterText(text: String, index: Int, keyboardBehavior: KeyboardBehavior, timeout: Long? = null) {
         Logger.d("enterText(text: $text, index: $index)")
 
@@ -225,7 +250,13 @@ class Automator private constructor() {
             throw UiObjectNotFoundException("$uiSelector")
         }
 
-        val uiObject = uiDevice.findObject(uiSelector).getFromParent(UiSelector().className(EditText::class.java))
+        var uiObject = uiDevice.findObject(uiSelector)
+
+        val uiObjectClassname = uiObject.getClassName()
+
+        if (uiObjectClassname != EditText::class.java.name) {
+            uiObject = uiObject.getChild(UiSelector().className(EditText::class.java))
+        }
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             uiObject.click()
@@ -263,6 +294,7 @@ class Automator private constructor() {
         val eY = (uiDevice.displayHeight * endY).roundToInt()
 
         val successful = uiDevice.swipe(sX, sY, eX, eY, steps)
+
         if (!successful) {
             throw IllegalArgumentException("Swipe failed")
         }
@@ -401,7 +433,8 @@ class Automator private constructor() {
             "com.android.permissioncontroller:id/permission_allow_one_time_button",
             // deny
             "com.android.packageinstaller:id/permission_deny_button",
-            "com.android.permissioncontroller:id/permission_deny_button"
+            "com.android.permissioncontroller:id/permission_deny_button",
+            "com.android.permissioncontroller:id/permission_deny_and_dont_ask_again_button"
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeout)
@@ -442,7 +475,8 @@ class Automator private constructor() {
     fun denyPermission() {
         val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_deny_button", // API <= 28
-            "com.android.permissioncontroller:id/permission_deny_button" // API >= 29
+            "com.android.permissioncontroller:id/permission_deny_button", // API >= 29 (first invocation)
+            "com.android.permissioncontroller:id/permission_deny_and_dont_ask_again_button" // API >= 29 (second invocation)
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
